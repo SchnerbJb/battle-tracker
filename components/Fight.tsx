@@ -11,9 +11,11 @@ export default function FightScreen() {
 
 	var currentScreen = <Text>Nothing to see here</Text>
 
+	// TODO: Add Counter of Commandment Points
+
 	switch (currentPhase) {
 		case 0:
-			currentScreen = <Text>Add Commandment Point +1</Text>
+			currentScreen = <Text style={{ textAlign: 'center', fontWeight: 'bold' }}>Commandment Phase</Text>
 			break;
 		case 1:
 			currentScreen = <MovementPhase army={data} />
@@ -67,15 +69,16 @@ export default function FightScreen() {
 const MovementPhase = ({ army }) => {
 
 	const movements = <View>{army.map((unit, index) => (
-		<View key={index}>
-			<Text>{unit.Name}</Text>
-			<Text>{unit.M}</Text>
+		<View key={index} style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
+			<Text style={{ fontSize: 24 }}>{unit.Name}</Text>
+			<Text style={{ fontSize: 24 }}>{unit.M}</Text>
 		</View>
 	))}</View>
+
 	return (
 		<View>
-			<Text>Movement Phase :</Text>
-			<Text style={styles.block}>{movements}</Text>
+			<Text style={{ textAlign: 'center', fontWeight: 'bold' }}>Movement Phase</Text>
+			<View style={styles.block}>{movements}</View>
 		</View>
 	)
 }
@@ -89,17 +92,20 @@ const ShootPhase = ({ army }) => {
 				(weapon, index) => (
 					<View key={index}>
 						<Text>{weapon.Name}</Text>
-						<View>
-							{weapon.KeyWords.length > 0 ? weapon.KeyWords.map((keyword, index) => (
-								<Text key={index}>{keyword}</Text>
-							)) : <Text></Text>}
+						<View style={{ flexDirection: 'row' }}>
+							{
+								weapon.KeyWords.length > 0 ? weapon.KeyWords.map((keyword, index) => (
+									<Text key={index}>{keyword}</Text>
+								))
+									: <Text></Text>
+							}
+							<Text>{weapon.Range}</Text>
+							<Text>{weapon.A}</Text>
+							<Text>{weapon.BS}</Text>
+							<Text>{weapon.S}</Text>
+							<Text>{weapon.AP}</Text>
+							<Text>{weapon.D}</Text>
 						</View>
-						<Text>{weapon.Range}</Text>
-						<Text>{weapon.A}</Text>
-						<Text>{weapon.BS}</Text>
-						<Text>{weapon.S}</Text>
-						<Text>{weapon.AP}</Text>
-						<Text>{weapon.D}</Text>
 					</View>
 				)
 			)}
@@ -107,13 +113,13 @@ const ShootPhase = ({ army }) => {
 	))}</View>
 	return (
 		<View>
-			<Text>Shot Phase :</Text>
+			<Text style={{ textAlign: 'center', fontWeight: 'bold' }}>Shoot Phase :</Text>
 			<Text style={styles.block}>{weapons}</Text>
 		</View>
 	)
 }
 
-
+// TODO: Maybe merge ShootPhase and MeleePhase Component Together
 const MeleePhase = ({ army }) => {
 
 	const weapons = <View>{army.map((unit, index) => (
@@ -122,11 +128,11 @@ const MeleePhase = ({ army }) => {
 				(weapon, index) => (
 					<View key={index}>
 						<Text>{weapon.Name}</Text>
-						<Text>
+						<View style={{ flexDirection: 'row' }}>
 							{weapon.KeyWords.length > 0 ? weapon.KeyWords.map((keyword, index) => (
 								<Text key={index}>{keyword}</Text>
 							)) : <Text></Text>}
-						</Text>
+						</View>
 						<Text>{weapon.A}</Text>
 						<Text>{weapon.BS}</Text>
 						<Text>{weapon.S}</Text>
@@ -139,7 +145,7 @@ const MeleePhase = ({ army }) => {
 	))}</View>
 	return (
 		<View>
-			<Text>Melee Phase :</Text>
+			<Text style={{ textAlign: 'center', fontWeight: 'bold' }}>Melee Phase</Text>
 			<Text style={styles.block}>{weapons}</Text>
 		</View>
 	)
@@ -150,10 +156,11 @@ const styles = StyleSheet.create({
 		flex: 1,
 		backgroundColor: '#fff',
 		alignItems: 'center',
-		justifyContent: 'flex-start',
+		justifyContent: 'flex-start'
 	},
 	block: {
 		textAlign: 'center',
+		paddingTop: 20,
 	},
 	previous: {
 		borderRadius: 12,
@@ -191,6 +198,6 @@ const styles = StyleSheet.create({
 		bottom: 12
 	},
 	content: {
-		width: '100%',
+		width: '75%',
 	},
 })
