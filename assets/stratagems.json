@@ -1,0 +1,10 @@
+[
+  {
+    "Name": "Command Re-Roll",
+    "Turn": "Either",
+    "Origin": "Core - Battle Tactic",
+    "When": "In any phase, just after you have made a Hit roll, a Wound roll, a Damage roll, a saving throw, an Advance roll, a Charge roll, a Desperate Escape test, a Hazardous test, or just after you have rolled the dice to determine the number of attacks made with a weapon, for an attack, model or unit from your army",
+    "Target": "-",
+    "Effect": "You re-roll that roll, test, roll or saving throw"
+  }
+]

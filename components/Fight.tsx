@@ -1,4 +1,5 @@
-import { Pressable, ScrollView, StyleSheet, Text, View } from "react-native"
+import { Dimensions, Pressable, ScrollView, StyleSheet, Text, View } from "react-native"
+import Modal from "react-native-modal"
 import { Unit } from "../utils/types"
 import { useState } from "react"
 
@@ -6,8 +7,9 @@ import { useState } from "react"
 
 export default function FightScreen() {
 	const Phases = ['Commandment', 'Movemment', 'Shoot', 'Fight']
-	const data: Unit[] = require('../assets/data.json')
+	const data: Unit[] = require('../assets/units.json')
 	const [currentPhase, setCurrentPhase] = useState(0)
+	const [battleshockVisible, setBattleshockVisible] = useState(false)
 
 	var currentScreen = <Text>Nothing to see here</Text>
 
@@ -46,6 +48,7 @@ export default function FightScreen() {
 		}
 	}
 	function OpenBattleShock() {
+		setBattleshockVisible(!battleshockVisible)
 	}
 
 	return (
@@ -53,6 +56,20 @@ export default function FightScreen() {
 			<ScrollView style={styles.content}>
 				{currentScreen}
 			</ScrollView>
+			<Modal
+				style={{
+					marginVertical: 100,
+					borderRadius: 15,
+					backgroundColor: 'white'
+				}}
+				isVisible={battleshockVisible}>
+				<ScrollView>
+					<BattleShock army={data} />
+				</ScrollView>
+				<Pressable onPress={OpenBattleShock} style={styles.battleshockModal}>
+					<Text>Close</Text>
+				</Pressable>
+			</Modal>
 			<Pressable onPress={PreviousPhase} style={styles.previous}>
 				<Text>Previous</Text>
 			</Pressable>
@@ -64,6 +81,30 @@ export default function FightScreen() {
 			</Pressable>
 		</View>
 	)
+}
+
+const BattleShock = ({ army }) => {
+
+	const battleshock = army.map((unit, index) => (
+		<View key={index} style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
+			<Text style={{ fontSize: 20, paddingRight: 100, flexWrap: 'wrap' }}>{unit.Name}</Text>
+			<Text style={{ fontSize: 20 }}>{unit.LD}</Text>
+		</View>
+	))
+
+	return (
+		<View style={{
+			justifyContent: 'center',
+			alignItems: 'center',
+			padding: 25,
+			marginTop: 22,
+			elevation: 5,
+		}}>
+			<Text style={{ textAlign: 'center', fontWeight: 'bold' }}>Battle Shock</Text>
+			<View style={styles.block}>{battleshock}</View>
+		</View>
+	)
+
 }
 
 const MovementPhase = ({ army }) => {
@@ -86,12 +127,20 @@ const MovementPhase = ({ army }) => {
 
 const ShootPhase = ({ army }) => {
 
-	const weapons = <View>{army.map((unit, index) => (
+	const weapons = army.map((unit, index) => (
 		<View key={index}>
 			{unit.RW.map(
 				(weapon, index) => (
 					<View key={index}>
-						<Text>{weapon.Name}</Text>
+						<Text style={{ fontSize: 24, textAlign: 'center' }}>{weapon.Name}</Text>
+						<View style={{ flexDirection: 'row', justifyContent: 'space-evenly' }}>
+							<Text>Range: {weapon.Range}</Text>
+							<Text>A: {weapon.A}</Text>
+							<Text>BS: {weapon.BS}</Text>
+							<Text>S: {weapon.S}</Text>
+							<Text>AP: {weapon.AP}</Text>
+							<Text>D: {weapon.D}</Text>
+						</View>
 						<View style={{ flexDirection: 'row' }}>
 							{
 								weapon.KeyWords.length > 0 ? weapon.KeyWords.map((keyword, index) => (
@@ -99,18 +148,12 @@ const ShootPhase = ({ army }) => {
 								))
 									: <Text></Text>
 							}
-							<Text>{weapon.Range}</Text>
-							<Text>{weapon.A}</Text>
-							<Text>{weapon.BS}</Text>
-							<Text>{weapon.S}</Text>
-							<Text>{weapon.AP}</Text>
-							<Text>{weapon.D}</Text>
 						</View>
 					</View>
 				)
 			)}
 		</View>
-	))}</View>
+	))
 	return (
 		<View>
 			<Text style={{ textAlign: 'center', fontWeight: 'bold' }}>Shoot Phase :</Text>
@@ -127,17 +170,22 @@ const MeleePhase = ({ army }) => {
 			{unit.MW.map(
 				(weapon, index) => (
 					<View key={index}>
-						<Text>{weapon.Name}</Text>
-						<View style={{ flexDirection: 'row' }}>
-							{weapon.KeyWords.length > 0 ? weapon.KeyWords.map((keyword, index) => (
-								<Text key={index}>{keyword}</Text>
-							)) : <Text></Text>}
+						<Text style={{ fontSize: 24, textAlign: 'center' }}>{weapon.Name}</Text>
+						<View style={{ flexDirection: 'row', justifyContent: 'space-evenly' }}>
+							<Text>{weapon.A}</Text>
+							<Text>{weapon.BS}</Text>
+							<Text>{weapon.S}</Text>
+							<Text>{weapon.AP}</Text>
+							<Text>{weapon.D}</Text>
 						</View>
-						<Text>{weapon.A}</Text>
-						<Text>{weapon.BS}</Text>
-						<Text>{weapon.S}</Text>
-						<Text>{weapon.AP}</Text>
-						<Text>{weapon.D}</Text>
+						<View style={{ flexDirection: 'row' }}>
+							{
+								weapon.KeyWords.length > 0 ? weapon.KeyWords.map((keyword, index) => (
+									<Text key={index}>{keyword}</Text>
+								))
+									: <Text></Text>
+							}
+						</View>
 					</View>
 				)
 			)}
@@ -150,6 +198,7 @@ const MeleePhase = ({ army }) => {
 		</View>
 	)
 }
+
 
 const styles = StyleSheet.create({
 	container: {
@@ -183,7 +232,20 @@ const styles = StyleSheet.create({
 		alignItems: 'center',
 		width: 150,
 		position: 'absolute',
-		bottom: 12
+		bottom: 12,
+		shadowColor: '#000',
+	},
+	battleshockModal: {
+		borderRadius: 12,
+		backgroundColor: 'skyblue',
+		paddingHorizontal: 12,
+		paddingVertical: 8,
+		margin: 16,
+		alignSelf: 'center',
+		alignItems: 'center',
+		justifyContent: 'center',
+		width: 150,
+		shadowColor: '#000',
 	},
 	next: {
 		borderRadius: 12,

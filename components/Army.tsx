@@ -8,7 +8,7 @@ import { Unit } from '../utils/types';
 
 
 export default function ArmyScreen() {
-	const data: Unit[] = require('../assets/data.json')
+	const data: Unit[] = require('../assets/units.json')
 
 	const blocks = data.map((unit, index) => <UnitBlock key={index} {...unit} />)
 	return (

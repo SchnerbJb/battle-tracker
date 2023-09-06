@@ -37,3 +37,13 @@ export interface Weapon {
 	Range?: string;
 }
 
+
+export interface Stratagems {
+	Name: string,
+	Turn: string,
+	Origin: string,
+	When: string,
+	Target: string,
+	Effect: string
+}
+
