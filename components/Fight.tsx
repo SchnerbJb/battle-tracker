@@ -1,4 +1,4 @@
-import { Dimensions, Pressable, ScrollView, StyleSheet, Text, View } from "react-native"
+import { Pressable, ScrollView, StyleSheet, Text, View } from "react-native"
 import Modal from "react-native-modal"
 import { Unit } from "../utils/types"
 import { useState } from "react"
@@ -6,12 +6,12 @@ import { useState } from "react"
 
 
 export default function FightScreen() {
-	const Phases = ['Commandment', 'Movemment', 'Shoot', 'Fight']
+	const Phases = ['Commandment', 'Movement', 'Shoot', 'Fight']
 	const data: Unit[] = require('../assets/units.json')
 	const [currentPhase, setCurrentPhase] = useState(0)
 	const [battleshockVisible, setBattleshockVisible] = useState(false)
 
-	var currentScreen = <Text>Nothing to see here</Text>
+	var currentScreen;
 
 	// TODO: Add Counter of Commandment Points
 
@@ -144,7 +144,7 @@ const ShootPhase = ({ army }) => {
 						<View style={{ flexDirection: 'row' }}>
 							{
 								weapon.KeyWords.length > 0 ? weapon.KeyWords.map((keyword, index) => (
-									<Text key={index}>{keyword}</Text>
+									<Text key={index}> {keyword} </Text>
 								))
 									: <Text></Text>
 							}
@@ -172,16 +172,16 @@ const MeleePhase = ({ army }) => {
 					<View key={index}>
 						<Text style={{ fontSize: 24, textAlign: 'center' }}>{weapon.Name}</Text>
 						<View style={{ flexDirection: 'row', justifyContent: 'space-evenly' }}>
-							<Text>{weapon.A}</Text>
-							<Text>{weapon.BS}</Text>
-							<Text>{weapon.S}</Text>
-							<Text>{weapon.AP}</Text>
-							<Text>{weapon.D}</Text>
+							<Text style={{ paddingHorizontal: 8 }}>A: {weapon.A}</Text>
+							<Text>BS: {weapon.BS}</Text>
+							<Text>S: {weapon.S}</Text>
+							<Text>AP: {weapon.AP}</Text>
+							<Text>D: {weapon.D}</Text>
 						</View>
 						<View style={{ flexDirection: 'row' }}>
 							{
 								weapon.KeyWords.length > 0 ? weapon.KeyWords.map((keyword, index) => (
-									<Text key={index}>{keyword}</Text>
+									<Text key={index}> {keyword} </Text>
 								))
 									: <Text></Text>
 							}
