@@ -118,8 +118,8 @@
       ],
       "MW": [
 	  {
-	      "Name": "Close Comat Weapon",
-	      "KeyWords": [""],
+	      "Name": "Close Combat Weapon",
+	      "KeyWords": [],
 	      "A": "2",
 	      "BS": "3+",
 	      "S": "4",
