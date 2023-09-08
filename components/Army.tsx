@@ -5,10 +5,29 @@ import { useState } from 'react';
 import { StyleSheet, Pressable, ScrollView, Text, View } from 'react-native';
 import { Unit } from '../utils/types';
 
+function empDetail(xml) {
+	var xmlDoc = xml.responseXML
+	console.log(xmlDoc.getElementsByName("Leader"))
+}
 
+function loadArmyXML() {
+	var xmlhttp = new XMLHttpRequest()
+
+	xmlhttp.open("GET", "Necrons.xml", true)
+	xmlhttp.onreadystatechange = function () {
+		if (xmlhttp.readyState === 4 && xmlhttp.status === 200) {
+			console.log("Oui")
+			empDetail(this)
+		} else {
+			console.log("Non")
+		}
+	};
+	xmlhttp.send()
+}
 
 export default function ArmyScreen() {
 	const data: Unit[] = require('../assets/units.json')
+	loadArmyXML()
 
 	const blocks = data.map((unit, index) => <UnitBlock key={index} {...unit} />)
 	return (
