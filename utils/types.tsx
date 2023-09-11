@@ -9,16 +9,10 @@ export interface Unit {
 	OC: string;
 	RW?: Weapon[];
 	MW: Weapon[];
-	InvulnerableSave: string;
-	Abilities: Abilities;
+	InvulnerableSave?: string;
+	Abilities: Ability[];
 	WargearAbilities: Ability[];
 	KeyWords: string[];
-}
-
-export interface Abilities {
-	Core: string[];
-	FactionAbilities: string[];
-	DatasheetAbilities: Ability[];
 }
 
 export interface Ability {

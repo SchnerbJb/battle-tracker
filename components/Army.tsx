@@ -5,30 +5,54 @@ import { useState } from 'react';
 import { StyleSheet, Pressable, ScrollView, Text, View } from 'react-native';
 import { Unit } from '../utils/types';
 
-function empDetail(xml) {
-	var xmlDoc = xml.responseXML
-	console.log(xmlDoc.getElementsByName("Leader"))
+function loadArmy() {
+	const data = require('../Necrons.json')
+	let units = []
+	data.catalogue.sharedSelectionEntries.selectionEntry.filter(function(data) { return data["-type"] == "model" })
+		.map((unit, index) => {
+			let Name: string = unit["-name"]
+			let models = unit.profiles.profile.filter(function(data) { return data["-typeName"] == "Unit" })
+			let M: string = models[0].characteristics.characteristic.filter(function(data) { return data["-name"] == "M" })[0]["#text"]
+			let T: string = models[0].characteristics.characteristic.filter(function(data) { return data["-name"] == "T" })[0]["#text"]
+			let SV: string = models[0].characteristics.characteristic.filter(function(data) { return data["-name"] == "SV" })[0]["#text"]
+			let W: string = models[0].characteristics.characteristic.filter(function(data) { return data["-name"] == "W" })[0]["#text"]
+			let LD: string = models[0].characteristics.characteristic.filter(function(data) { return data["-name"] == "LD" })[0]["#text"]
+			let OC: string = models[0].characteristics.characteristic.filter(function(data) { return data["-name"] == "OC" })[0]["#text"]
+			let Abilities = { Core: [], FactionAbilities: [], DatasheetAbilities: [] }
+			let Wargear = []
+			let KeyWords = []
+			let RW = []
+			let MW = []
+			let InvulnerableSave = []
+			units.push({
+				Name: Name,
+				M: M,
+				T: T,
+				SV: SV,
+				W: W,
+				LD: LD,
+				OC: OC,
+				Abilities: Abilities,
+				WargearAbilities: Wargear,
+				KeyWords: KeyWords,
+				RW: RW,
+				MW: MW,
+				InvulnerableSave: InvulnerableSave
+			})
+		})
+
+	data.catalogue.sharedSelectionEntries.selectionEntry.filter(function(data) { return data["-type"] == "unit" })
+		.map((unit, index) => {
+			console.log(unit["-name"])
+		})
+	console.log(units)
+	return units
 }
 
-function loadArmyXML() {
-	var xmlhttp = new XMLHttpRequest()
-
-	xmlhttp.open("GET", "Necrons.xml", true)
-	xmlhttp.onreadystatechange = function () {
-		if (xmlhttp.readyState === 4 && xmlhttp.status === 200) {
-			console.log("Oui")
-			empDetail(this)
-		} else {
-			console.log("Non")
-		}
-	};
-	xmlhttp.send()
-}
 
 export default function ArmyScreen() {
-	const data: Unit[] = require('../assets/units.json')
-	loadArmyXML()
-
+	// const data: Unit[] = require('../assets/units.json')
+	const data = loadArmy()
 	const blocks = data.map((unit, index) => <UnitBlock key={index} {...unit} />)
 	return (
 
@@ -189,6 +213,7 @@ const WeaponStatBlock = ({ stat }) => {
 }
 
 const AbilityStatBlock = ({ stat }) => {
+	// TODO : remake all abilities
 	const coreAbilities = stat.Core.length > 0 ? <Text style={{ textAlign: 'center', fontWeight: 'bold', fontSize: 16 }}>Core : {stat.Core.map((ability, index) => (
 		<Text key={index}>
 			<Text style={{ textAlign: 'center' }}>{ability}</Text>
