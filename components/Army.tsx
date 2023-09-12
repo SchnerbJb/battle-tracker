@@ -18,12 +18,12 @@ function loadArmy() {
 			let W: string = models[0].characteristics.characteristic.filter(function(data) { return data["-name"] == "W" })[0]["#text"]
 			let LD: string = models[0].characteristics.characteristic.filter(function(data) { return data["-name"] == "LD" })[0]["#text"]
 			let OC: string = models[0].characteristics.characteristic.filter(function(data) { return data["-name"] == "OC" })[0]["#text"]
-			let Abilities = { Core: [], FactionAbilities: [], DatasheetAbilities: [] }
+			let Abilities = unit.profiles.profile.filter(function(data) { return data["-typeName"] == "Abilities" }).map(ability => ({ Name: ability["-name"], Description: ability.characteristics.characteristic["#text"] }))
 			let Wargear = []
 			let KeyWords = []
 			let RW = []
 			let MW = []
-			let InvulnerableSave = []
+			let InvulnerableSave = Abilities.filter(function(data) {return data["-name"] == "Invulnerable Save"})
 			units.push({
 				Name: Name,
 				M: M,
@@ -104,7 +104,7 @@ const UnitBlock = (stat: Unit) => {
 				OC : {stat.OC}
 			</Text>
 			{
-				invulnerableSave.length > 0 ?
+				invulnerableSave != "" ?
 					<View style={styles.dropdown}>
 						<Text style={styles.dropdownText}>Invulnerable Save <Text style={{ borderRadius: 4, backgroundColor: 'white', color: 'black' }}> {invulnerableSave} </Text></Text>
 					</View>
@@ -214,31 +214,36 @@ const WeaponStatBlock = ({ stat }) => {
 
 const AbilityStatBlock = ({ stat }) => {
 	// TODO : remake all abilities
-	const coreAbilities = stat.Core.length > 0 ? <Text style={{ textAlign: 'center', fontWeight: 'bold', fontSize: 16 }}>Core : {stat.Core.map((ability, index) => (
-		<Text key={index}>
-			<Text style={{ textAlign: 'center' }}>{ability}</Text>
-		</Text>
-	))}
-	</Text> : <Text></Text>
-
-	const factionAbilities = stat.FactionAbilities.map((ability, index) => (
-		<View key={index}>
-			<Text style={{ textAlign: 'center', fontWeight: 'bold', fontSize: 16 }}>{ability}</Text>
-		</View>
-	))
-
-	const datasheetAbilities = stat.DatasheetAbilities.map((ability, index) => (
+	// const coreAbilities = stat.Core.length > 0 ? <Text style={{ textAlign: 'center', fontWeight: 'bold', fontSize: 16 }}>Core : {stat.Core.map((ability, index) => (
+	// 	<Text key={index}>
+	// 		<Text style={{ textAlign: 'center' }}>{ability}</Text>
+	// 	</Text>
+	// ))}
+	// </Text> : <Text></Text>
+	//
+	// const factionAbilities = stat.FactionAbilities.map((ability, index) => (
+	// 	<View key={index}>
+	// 		<Text style={{ textAlign: 'center', fontWeight: 'bold', fontSize: 16 }}>{ability}</Text>
+	// 	</View>
+	// ))
+	//
+	// const datasheetAbilities = stat.DatasheetAbilities.map((ability, index) => (
+	// 	<View key={index}>
+	// 		<Text style={{ textAlign: 'center', fontWeight: 'bold', fontSize: 16 }}>{ability.Name}</Text>
+	// 		<Text style={{ textAlign: 'center' }}>{ability.Description}</Text>
+	// 	</View>
+	// ))
+	const Abilities = stat.map((ability, index) => (
 		<View key={index}>
 			<Text style={{ textAlign: 'center', fontWeight: 'bold', fontSize: 16 }}>{ability.Name}</Text>
 			<Text style={{ textAlign: 'center' }}>{ability.Description}</Text>
 		</View>
 	))
 
+
 	return (
 		<View>
-			{coreAbilities}
-			{factionAbilities}
-			{datasheetAbilities}
+			{Abilities}
 		</View>
 	)
 }
