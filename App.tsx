@@ -4,10 +4,12 @@ import Ionicons from 'react-native-vector-icons/Ionicons';
 import ArmyScreen from './components/Army';
 import FightScreen from './components/Fight';
 import StratagemsScreen from './components/Stratagems';
+import { useState } from 'react';
 
 export default function App() {
 
 	const Tab = createBottomTabNavigator();
+	const [data, setData] = useState([])
 
 	return (
 		<NavigationContainer>
@@ -32,9 +34,15 @@ export default function App() {
 						return <Ionicons name={iconName} size={size} color={color} />;
 					}
 				})}>
-				<Tab.Screen name="Army" component={ArmyScreen} />
-				<Tab.Screen name="Fight" component={FightScreen} />
-				<Tab.Screen name="Stratagems" component={StratagemsScreen} />
+				<Tab.Screen name="Army"
+					children={() => <ArmyScreen data={data} callback={setData} />}
+				/>
+				<Tab.Screen name="Fight"
+					children={() => <FightScreen data={data} callback={setData} />}
+				/>
+				<Tab.Screen name="Stratagems"
+					children={() => <StratagemsScreen />}
+				/>
 			</Tab.Navigator>
 		</NavigationContainer>
 	);

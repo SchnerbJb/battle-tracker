@@ -1,6 +1,7 @@
 
 export interface Unit {
 	Name: string;
+	type: string;
 	M: string;
 	T: string;
 	SV: string;

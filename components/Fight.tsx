@@ -5,9 +5,10 @@ import { useState } from "react"
 
 
 
-export default function FightScreen() {
+export default function FightScreen(props) {
 	const Phases = ['Commandment', 'Movement', 'Shoot', 'Fight']
-	const data: Unit[] = require('../assets/units.json')
+	// const data: Unit[] = require('../assets/units.json')
+	// const data: Unit[] = []
 	const [currentPhase, setCurrentPhase] = useState(0)
 	const [battleshockVisible, setBattleshockVisible] = useState(false)
 
@@ -20,13 +21,13 @@ export default function FightScreen() {
 			currentScreen = <Text style={{ textAlign: 'center', fontWeight: 'bold' }}>Commandment Phase</Text>
 			break;
 		case 1:
-			currentScreen = <MovementPhase army={data} />
+			currentScreen = <MovementPhase army={props.data} />
 			break;
 		case 2:
-			currentScreen = <ShootPhase army={data} />
+			currentScreen = <ShootPhase army={props.data} />
 			break;
 		case 3:
-			currentScreen = <MeleePhase army={data} />
+			currentScreen = <MeleePhase army={props.data} />
 			break;
 		default:
 			currentScreen = <Text>Nothing to see here</Text>
@@ -64,7 +65,7 @@ export default function FightScreen() {
 				}}
 				isVisible={battleshockVisible}>
 				<ScrollView>
-					<BattleShock army={data} />
+					<BattleShock army={props.data} />
 				</ScrollView>
 				<Pressable onPress={OpenBattleShock} style={styles.battleshockModal}>
 					<Text>Close</Text>
@@ -156,7 +157,7 @@ const ShootPhase = ({ army }) => {
 	))
 	return (
 		<View>
-			<Text style={{ textAlign: 'center', fontWeight: 'bold' }}>Shoot Phase :</Text>
+			<Text style={{ textAlign: 'center', fontWeight: 'bold' }}>Shoot Phase</Text>
 			<Text style={styles.block}>{weapons}</Text>
 		</View>
 	)

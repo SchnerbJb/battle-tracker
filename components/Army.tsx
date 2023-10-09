@@ -1,29 +1,47 @@
-import { faAngleDown } from '@fortawesome/free-solid-svg-icons';
+import { faAngleDown, faPlus } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-native-fontawesome';
 import { StatusBar } from 'expo-status-bar';
 import { useState } from 'react';
-import { StyleSheet, Pressable, ScrollView, Text, View } from 'react-native';
+import { StyleSheet, Pressable, ScrollView, Text, View, Dimensions } from 'react-native';
 import { Unit } from '../utils/types';
+import Modal from 'react-native-modal';
 
 function loadArmy() {
 	const data = require('../Necrons.json')
 	let units = []
-	data.catalogue.sharedSelectionEntries.selectionEntry.filter(function(data) { return data["-type"] == "model" })
+	data.catalogue.sharedSelectionEntries.selectionEntry.filter(
+		function(data) { return data["-type"] == "model" || data["-type"] == "unit" && data["-name"] != "Tomb Blades" && data["-name"] != "The Silent King" })
 		.map((unit, index) => {
 			let Name: string = unit["-name"]
-			let models = unit.profiles.profile.filter(function(data) { return data["-typeName"] == "Unit" })
-			let M: string = models[0].characteristics.characteristic.filter(function(data) { return data["-name"] == "M" })[0]["#text"]
-			let T: string = models[0].characteristics.characteristic.filter(function(data) { return data["-name"] == "T" })[0]["#text"]
-			let SV: string = models[0].characteristics.characteristic.filter(function(data) { return data["-name"] == "SV" })[0]["#text"]
-			let W: string = models[0].characteristics.characteristic.filter(function(data) { return data["-name"] == "W" })[0]["#text"]
-			let LD: string = models[0].characteristics.characteristic.filter(function(data) { return data["-name"] == "LD" })[0]["#text"]
-			let OC: string = models[0].characteristics.characteristic.filter(function(data) { return data["-name"] == "OC" })[0]["#text"]
-			let Abilities = unit.profiles.profile.filter(function(data) { return data["-typeName"] == "Abilities" }).map(ability => ({ Name: ability["-name"], Description: ability.characteristics.characteristic["#text"] }))
+			let models = unit.profiles.profile.filter(
+				function(data) { return data["-typeName"] == "Unit" })
+			let M: string = models[0].characteristics.characteristic.filter(
+				function(data) { return data["-name"] == "M" })[0]["#text"]
+			let T: string = models[0].characteristics.characteristic.filter(
+				function(data) { return data["-name"] == "T" })[0]["#text"]
+			let SV: string = models[0].characteristics.characteristic.filter(
+				function(data) { return data["-name"] == "SV" })[0]["#text"]
+			let W: string = models[0].characteristics.characteristic.filter(
+				function(data) { return data["-name"] == "W" })[0]["#text"]
+			let LD: string = models[0].characteristics.characteristic.filter(
+				function(data) { return data["-name"] == "LD" })[0]["#text"]
+			let OC: string = models[0].characteristics.characteristic.filter(
+				function(data) { return data["-name"] == "OC" })[0]["#text"]
+			let Abilities = unit.profiles.profile.filter(
+				function(data) { return data["-typeName"] == "Abilities" })
+				.map(ability => ({ Name: ability["-name"], Description: ability.characteristics.characteristic["#text"] }))
 			let Wargear = []
 			let KeyWords = []
 			let RW = []
+			if (unit.selectionEntries === undefined) {
+				if (unit.selectionEntryGroups.selectionEntries !== undefined) {
+					console.log(unit["-name"])
+					console.log(unit.selectionEntryGroups)
+				}
+			}
 			let MW = []
-			let InvulnerableSave = Abilities.filter(function(data) {return data["-name"] == "Invulnerable Save"})
+			let InvulnerableSave = Abilities.filter(
+				function(data) { return data["-name"] == "Invulnerable Save" })
 			units.push({
 				Name: Name,
 				M: M,
@@ -40,29 +58,73 @@ function loadArmy() {
 				InvulnerableSave: InvulnerableSave
 			})
 		})
-
-	data.catalogue.sharedSelectionEntries.selectionEntry.filter(function(data) { return data["-type"] == "unit" })
-		.map((unit, index) => {
-			console.log(unit["-name"])
-		})
-	console.log(units)
 	return units
 }
 
 
-export default function ArmyScreen() {
-	// const data: Unit[] = require('../assets/units.json')
-	const data = loadArmy()
-	const blocks = data.map((unit, index) => <UnitBlock key={index} {...unit} />)
-	return (
+export default function ArmyScreen(props) {
+	const army = loadArmy()
 
-		<ScrollView style={styles.container}>
-			{blocks}
+	const [index, SetOpenIndex] = useState(false)
+
+	function openIndex() {
+		SetOpenIndex(!index)
+	}
+	console.log(props.data.length)
+
+	// Redo the placement of the button
+	return (
+		<View>
+			{props.data.length > 0 ?
+				<ScrollView style={styles.container}>
+					{props.data.map((unit, index) => <UnitBlock key={index} {...unit} />)}
+				</ScrollView> : <View style={{ backgroundColor: 'white', width: '100%', height: '100%' }}></View>}
+			<Modal
+				style={{
+					marginVertical: 30,
+					borderRadius: 15,
+					backgroundColor: 'white'
+				}}
+				isVisible={index}>
+				<ScrollView>
+					{army.length > 0 ? army.map((unit, index) => <IndexBlock key={index} unit={unit} callback={props.callback} data={props.data} army={army} />) : <></>}
+				</ScrollView>
+				<Pressable onPress={openIndex}>
+					<Text style={styles.indexModal}>Close</Text>
+				</Pressable>
+			</Modal>
+			<Pressable onPress={openIndex} style={{ alignItems: 'center', position: 'absolute', top: Dimensions.get("window").height - 200, left: Dimensions.get("window").width - 80 }}>
+				<Text style={{ backgroundColor: 'skyblue', padding: 12, borderRadius: 12 }}><FontAwesomeIcon icon={faPlus} size={24} color='white' /></Text>
+			</Pressable>
 			<StatusBar style="auto" />
-		</ScrollView>
+		</View>
 	)
 }
 
+const IndexBlock = (props) => {
+	const [alreadyIn, setAlreadyIn] = useState(false)
+	function add() {
+		console.log(props.unit.Name)
+		setAlreadyIn(true)
+		props.callback([...props.data, props.unit])
+	}
+	return (
+		<View style={{ display: 'flex', justifyContent: 'space-between', flexDirection: 'row', margin: 18 }}>
+			<Text style={{ fontWeight: 'bold', fontSize: 24, width: '75%', padding: 8 }}>{props.unit.Name}</Text>
+			<View style={{}}>
+				{
+					!alreadyIn ?
+						<Pressable style={{ backgroundColor: 'skyblue', borderRadius: 4, padding: 8 }} onPress={add}>
+							<Text style={{ textAlign: 'center' }}>
+								<FontAwesomeIcon icon={faPlus} size={24} color='white' />
+							</Text>
+						</Pressable>
+						: <View style={{ padding: 8 }}></View>
+				}
+			</View>
+		</View>
+	)
+}
 
 const UnitBlock = (stat: Unit) => {
 	const [showRanged, setShowRanged] = useState(false)
@@ -95,13 +157,27 @@ const UnitBlock = (stat: Unit) => {
 	return (
 		<View style={styles.block}>
 			<Text style={styles.titleStatblock}>{stat.Name}</Text>
+			<View style={{ backgroundColor: 'lightgray', width: '90%', height: 1, marginVertical: 8, borderRadius: 4 }}></View>
 			<Text style={styles.textStatblock}>
-				M : {stat.M}
-				T : {stat.T}
-				SV : {stat.SV}
-				W : {stat.W}
-				LD : {stat.LD}
-				OC : {stat.OC}
+				<Text>  |  </Text>
+				<Text style={styles.cell}>M  </Text>
+				<Text style={styles.cellAbility}>{stat.M}</Text>
+				<Text> |  </Text>
+				<Text style={styles.cell}>T  </Text>
+				<Text style={styles.cellAbility}>{stat.T}</Text>
+				<Text>  |  </Text>
+				<Text style={styles.cell}>SV  </Text>
+				<Text style={styles.cellAbility}>{stat.SV}</Text>
+				<Text>  |  </Text>
+				<Text style={styles.cell}>W  </Text>
+				<Text style={styles.cellAbility}>{stat.W}</Text>
+				<Text>  |  </Text>
+				<Text style={styles.cell}>LD  </Text>
+				<Text style={styles.cellAbility}>{stat.LD}</Text>
+				<Text>  |  </Text>
+				<Text style={styles.cell}>OC  </Text>
+				<Text style={styles.cellAbility}>{stat.OC}</Text>
+				<Text>  |  </Text>
 			</Text>
 			{
 				invulnerableSave != "" ?
@@ -109,11 +185,17 @@ const UnitBlock = (stat: Unit) => {
 						<Text style={styles.dropdownText}>Invulnerable Save <Text style={{ borderRadius: 4, backgroundColor: 'white', color: 'black' }}> {invulnerableSave} </Text></Text>
 					</View>
 					: <></>}
-			<Pressable onPress={toggleRanged} style={styles.dropdown}>
-				<Text style={styles.dropdownText}>Ranged Weapon <FontAwesomeIcon icon={faAngleDown} color='white' /></Text>
-			</Pressable>
-			<View style={showRanged ? styles.weaponView : styles.hiddenView}><WeaponStatBlock stat={ranged} /></View>
+			{ranged.length > 0 ?
+				<>
 
+					<Pressable onPress={toggleRanged} style={styles.dropdown}>
+						<Text style={styles.dropdownText}>Ranged Weapon <FontAwesomeIcon icon={faAngleDown} color='white' /></Text>
+					</Pressable>
+					<View style={showRanged ? styles.weaponView : styles.hiddenView}><WeaponStatBlock stat={ranged} /></View>
+
+				</>
+				: <Text></Text>
+			}
 			<Pressable onPress={toggleMelee} style={styles.dropdown}>
 				<Text style={styles.dropdownText}>Melee Weapon <FontAwesomeIcon icon={faAngleDown} color='white' /></Text>
 			</Pressable>
@@ -170,37 +252,37 @@ const WeaponStatBlock = ({ stat }) => {
 	return (
 		<View style={styles.table}>
 			<View style={styles.rowHeader}>
-				<View style={styles.cell}>
+				<View style={styles.rowCell}>
 					<Text>
 						Name
 					</Text>
 				</View>
-				<View style={styles.cell}>
+				<View style={styles.rowCell}>
 					<Text>
 						Keywords
 					</Text>
 				</View>
-				<View style={styles.cell}>
+				<View style={styles.rowCell}>
 					<Text>
 						A
 					</Text>
 				</View>
-				<View style={styles.cell}>
+				<View style={styles.rowCell}>
 					<Text>
 						BS
 					</Text>
 				</View>
-				<View style={styles.cell}>
+				<View style={styles.rowCell}>
 					<Text>
-						<Text>S</Text>
+						S
 					</Text>
 				</View>
-				<View style={styles.cell}>
+				<View style={styles.rowCell}>
 					<Text>
 						AP
 					</Text>
 				</View>
-				<View style={styles.cell}>
+				<View style={styles.rowCell}>
 					<Text>
 						D
 					</Text>
@@ -213,26 +295,6 @@ const WeaponStatBlock = ({ stat }) => {
 }
 
 const AbilityStatBlock = ({ stat }) => {
-	// TODO : remake all abilities
-	// const coreAbilities = stat.Core.length > 0 ? <Text style={{ textAlign: 'center', fontWeight: 'bold', fontSize: 16 }}>Core : {stat.Core.map((ability, index) => (
-	// 	<Text key={index}>
-	// 		<Text style={{ textAlign: 'center' }}>{ability}</Text>
-	// 	</Text>
-	// ))}
-	// </Text> : <Text></Text>
-	//
-	// const factionAbilities = stat.FactionAbilities.map((ability, index) => (
-	// 	<View key={index}>
-	// 		<Text style={{ textAlign: 'center', fontWeight: 'bold', fontSize: 16 }}>{ability}</Text>
-	// 	</View>
-	// ))
-	//
-	// const datasheetAbilities = stat.DatasheetAbilities.map((ability, index) => (
-	// 	<View key={index}>
-	// 		<Text style={{ textAlign: 'center', fontWeight: 'bold', fontSize: 16 }}>{ability.Name}</Text>
-	// 		<Text style={{ textAlign: 'center' }}>{ability.Description}</Text>
-	// 	</View>
-	// ))
 	const Abilities = stat.map((ability, index) => (
 		<View key={index}>
 			<Text style={{ textAlign: 'center', fontWeight: 'bold', fontSize: 16 }}>{ability.Name}</Text>
@@ -267,7 +329,6 @@ const WargearStatBlock = ({ stat }) => {
 
 const styles = StyleSheet.create({
 	container: {
-		flex: 1,
 		backgroundColor: '#fff',
 	},
 	block: {
@@ -281,7 +342,11 @@ const styles = StyleSheet.create({
 		fontWeight: 'bold',
 	},
 	textStatblock: {
+		marginVertical: 8,
+		flexDirection: 'row',
 		fontSize: 16,
+		paddingHorizontal: 15,
+
 	},
 	dropdown: {
 		alignItems: 'center',
@@ -298,20 +363,42 @@ const styles = StyleSheet.create({
 		fontWeight: 'bold',
 		color: 'white',
 	},
+	indexModal: {
+		borderRadius: 12,
+		textAlign: 'center',
+		backgroundColor: 'skyblue',
+		paddingHorizontal: 12,
+		paddingVertical: 8,
+		margin: 16,
+		alignSelf: 'center',
+		alignItems: 'center',
+		justifyContent: 'center',
+		width: 150,
+		shadowColor: '#000',
+	},
 	hiddenView: {
 		display: 'none',
 	},
 	weaponView: {
+		width: '70%'
 	},
 	icon: {
 	},
 	rowHeader: {
+		flexDirection: 'row',
+		justifyContent: 'space-between'
+	},
+	rowCell: {
 	},
 	table: {
 	},
 	row: {
 	},
 	cell: {
+		color: 'grey'
+	},
+	cellAbility: {
+		fontWeight: 'bold',
 	}
 
 });

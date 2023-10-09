@@ -2,7 +2,7 @@ import { Text, View, StyleSheet, ScrollView } from 'react-native';
 import { Stratagems } from '../utils/types';
 
 
-export default function StratagemsScreen() {
+export default function StratagemsScreen(props) {
 
 	const data: Stratagems[] = require('../assets/stratagems.json')
 
