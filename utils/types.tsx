@@ -25,7 +25,7 @@ export interface Weapon {
 	Name: string;
 	KeyWords: string[];
 	A: string;
-	BS: string;
+	XS: string;
 	S: string;
 	AP: string;
 	D: string;

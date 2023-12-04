@@ -10,8 +10,8 @@ function loadArmy() {
 	const data = require('../Necrons.json')
 	let units = []
 	data.catalogue.sharedSelectionEntries.selectionEntry.filter(
-		function(data) { return data["-type"] == "model" || data["-type"] == "unit" && data["-name"] != "Tomb Blades" && data["-name"] != "The Silent King" })
-		.map((unit, index) => {
+		function(data: any) { return data["-type"] == "model"})
+		.map((unit: any, _: any) => {
 			let Name: string = unit["-name"]
 			let models = unit.profiles.profile.filter(
 				function(data) { return data["-typeName"] == "Unit" })
@@ -33,15 +33,10 @@ function loadArmy() {
 			let Wargear = []
 			let KeyWords = []
 			let RW = []
-			if (unit.selectionEntries === undefined) {
-				if (unit.selectionEntryGroups.selectionEntries !== undefined) {
-					console.log(unit["-name"])
-					console.log(unit.selectionEntryGroups)
-				}
-			}
 			let MW = []
 			let InvulnerableSave = Abilities.filter(
 				function(data) { return data["-name"] == "Invulnerable Save" })
+			if (Name.includes("[Legend]"))
 			units.push({
 				Name: Name,
 				M: M,
@@ -62,7 +57,7 @@ function loadArmy() {
 }
 
 
-export default function ArmyScreen(props) {
+export default function ArmyScreen(props: any) {
 	const army = loadArmy()
 
 	const [index, SetOpenIndex] = useState(false)
@@ -70,7 +65,6 @@ export default function ArmyScreen(props) {
 	function openIndex() {
 		SetOpenIndex(!index)
 	}
-	console.log(props.data.length)
 
 	// Redo the placement of the button
 	return (
@@ -87,7 +81,11 @@ export default function ArmyScreen(props) {
 				}}
 				isVisible={index}>
 				<ScrollView>
-					{army.length > 0 ? army.map((unit, index) => <IndexBlock key={index} unit={unit} callback={props.callback} data={props.data} army={army} />) : <></>}
+					{
+						army.length > 0 ?
+							army.map((unit, index) => <IndexBlock key={index} unit={unit} callback={props.callback} data={props.data} army={army} />)
+							: <></>
+					}
 				</ScrollView>
 				<Pressable onPress={openIndex}>
 					<Text style={styles.indexModal}>Close</Text>

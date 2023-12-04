@@ -29,6 +29,8 @@ export default function FightScreen(props) {
 		case 3:
 			currentScreen = <MeleePhase army={props.data} />
 			break;
+		case 4:
+			break;
 		default:
 			currentScreen = <Text>Nothing to see here</Text>
 			break;
